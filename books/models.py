@@ -1,10 +1,12 @@
-from binhex import REASONABLY_LARGE
-
 from django.db import models
+from django.urls import reverse
 
 class Category(models.Model):
     name = models.CharField(max_length=50, unique=True, verbose_name='Категорія')
     slug = models.SlugField(max_length=50, unique=True, verbose_name='Slug')
+
+    def get_absolute_url(self):
+        return reverse('books:category_detail', kwargs={'pk': self.pk})
 
     def __str__(self):
         return self.name
