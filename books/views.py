@@ -56,6 +56,7 @@ class CategoryDeleteView(DeleteView):
 class BookListView(ListView):
     model = Book
     template_name = 'books/books.html'
+    paginate_by = 5
 
     def get_queryset(self):
         return super().get_queryset().select_related('category')
