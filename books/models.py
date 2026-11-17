@@ -1,5 +1,7 @@
 from django.db import models
 from django.urls import reverse
+from django.utils.text import slugify
+
 
 class Category(models.Model):
     name = models.CharField(max_length=50, unique=True, verbose_name='Категорія')
@@ -15,6 +17,17 @@ class Category(models.Model):
         verbose_name = 'Категорія'
         verbose_name_plural = 'Категорії'
         ordering = ['name']
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            base = slugify(self.name, allow_unicode=True) or 'category'
+            slug = base
+            n = 2
+            while Category.objects.filter(slug=slug).exclude(pk=self.pk).exists():
+                slug = f'{base}-{n}'
+                n += 1
+            self.slug = slug
+        super().save(*args, **kwargs)
 
 class Book(models.Model):
     title = models.CharField(max_length=200)
