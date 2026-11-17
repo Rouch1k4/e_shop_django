@@ -1,6 +1,6 @@
 from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
-from django.db.models import ProtectedError
+from django.db.models import ProtectedError, Q
 from django.urls import reverse_lazy
 from django.views.generic import (CreateView, DeleteView, DetailView, ListView, UpdateView,)
 from books.forms import CategoryForm, BookForm
@@ -59,7 +59,26 @@ class BookListView(ListView):
     paginate_by = 5
 
     def get_queryset(self):
-        return super().get_queryset().select_related('category')
+        qs = super().get_queryset().select_related('category')
+        q = self.request.GET.get('q', '').strip()
+        category = self.request.GET.get('category', '')
+
+        if q:
+            qs = qs.filter(Q(title__icontains=q) | Q(author__icontains=q))
+        if category.isdigit():
+            qs = qs.filter(category_id=category)
+        return qs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['categories'] = Category.objects.all()
+        context['q'] = self.request.GET.get('q', '')
+        context['selected_category'] = self.request.GET.get('category', '')
+        params = self.request.GET.copy()
+        params.pop('page', None)
+        context['query_string'] = params.urlencode()
+        return context
+
 
 class BookDetailView(DetailView):
     model = Book
