@@ -1,36 +1,54 @@
+from django.contrib import messages
+from django.contrib.messages.views import SuccessMessageMixin
+from django.db.models import ProtectedError
 from django.urls import reverse_lazy
-from django.views.generic import UpdateView, CreateView, DeleteView
-from books.models import Category
+from django.views.generic import (CreateView, DeleteView, ListView, UpdateView,)
 from books.forms import CategoryForm
-from django.shortcuts import render
+from books.models import Category
 
-class CategoryCreateView(CreateView):
+
+class CategoryListView(ListView):
     model = Category
+    template_name = 'books/categories.html'
+
+
+class CategoryCreateView(SuccessMessageMixin, CreateView):
+    model = Category
+    form_class = CategoryForm
     template_name = 'books/category_create.html'
-    form_class = CategoryForm
     success_url = reverse_lazy('books:category')
 
-class CategoryUpdateView(UpdateView):
+    def get_success_message(self, cleaned_data):
+        return 'Category {name} has been successfully created'.format(**cleaned_data)
+
+
+class CategoryUpdateView(SuccessMessageMixin, UpdateView):
     model = Category
-    template_name = 'books/category_update.html'
     form_class = CategoryForm
+    template_name = 'books/category_update.html'
     success_url = reverse_lazy('books:category')
+
+    def get_success_message(self, cleaned_data):
+        return 'Category {name} has been successfully updated'.format(**cleaned_data)
+
 
 class CategoryDeleteView(DeleteView):
     model = Category
     template_name = 'books/category_delete.html'
     success_url = reverse_lazy('books:category')
 
-def home(request, pk=None):
-    if request.method == 'POST':
-        form = CategoryForm(request.POST)
-        if form.is_valid():
-            form.save()  # Створює запис у базі даних одним методом!
-            # Після збереження зазвичай роблять редирект, але поки оновимо список
+    def form_valid(self, form):
+        name = self.object.name
+        try:
+            response = super().form_valid(form)
+        except ProtectedError:
+            messages.error(
+                self.request,
+                f'Category {name} cannot be deleted: it still has books',
+            )
+            return super().form_invalid(form)
 
-    form = CategoryForm()  # Свіжа порожня форма для GET-запиту
-    qs = Category.objects.all()
-    context = {'object_list': qs, 'form': form}
-    return render(request, 'books/categories.html', context)
-
-
+        messages.success(
+            self.request, f'Category {name} has been successfully deleted',
+        )
+        return response
