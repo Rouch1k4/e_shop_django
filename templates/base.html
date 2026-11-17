@@ -1,5 +1,6 @@
 {% url 'books:category' as category_home_url %}
 {% url 'books:category_create' as category_create_url %}
+{% url 'books:book' as book_home_url %}
 <!doctype html>
 <html lang="en">
   <head>
@@ -16,15 +17,15 @@
 
         <nav class="navbar navbar-expand-lg" style="background-color: #e3f2fd;">
           <div class="container-fluid">
-            <a class="navbar-brand" href="{{ category_home_url }}">Book Store</a>
+            <a class="navbar-brand" href="{{ category_home_url }}">E-Book Store</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown">
               <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNavDropdown">
               <ul class="navbar-nav">
                 <li class="nav-item">
-                  <a class="nav-link {% if request.path == category_home_url %}active{% endif %}"
-                     href="{{ category_home_url }}">Categories</a>
+                    <a class="nav-link {% if request.path == book_home_url %}active{% endif %}"
+                        href="{{ book_home_url }}">Books</a>
                 </li>
                 <li class="nav-item dropdown">
                   <a class="nav-link dropdown-toggle {% if request.path == category_create_url %}active{% endif %}"

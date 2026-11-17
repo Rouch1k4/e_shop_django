@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block title %}{{ object.title }}{% endblock %}
+
+{% block content %}
+<h1 class="my-4">Book details</h1>
+
+<div class="card">
+    <div class="card-header">{{ object.title }}</div>
+    <div class="card-body">
+        <p class="card-text"><strong>Author:</strong> {{ object.author }}</p>
+        <p class="card-text"><strong>Price:</strong> {{ object.price }}</p>
+        <p class="card-text"><strong>Category:</strong> {{ object.category.name }}</p>
+        <p class="card-text">{{ object.description|default:"No description." }}</p>
+        {% if object.stock > 0 %}
+            <p class="text-success">In stock: {{ object.stock }}</p>
+        {% else %}
+            <p class="text-danger">Out of stock</p>
+        {% endif %}
+    </div>
+</div>
+
+<a href="{% url 'books:book' %}" class="btn btn-outline-secondary mt-3">Back to list</a>
+{% endblock %}

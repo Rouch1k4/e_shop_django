@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% block title %}Books{% endblock %}
+
+{% block content %}
+<h1 class="text-center my-4">Books</h1>
+
+<div class="row">
+    {% for object in object_list %}
+        <div class="col-sm-3 mb-3">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <a href="{% url 'books:book_detail' pk=object.id %}">{{ object.title }}</a>
+                    </h5>
+                    <h6 class="card-subtitle mb-2 text-body-secondary">{{ object.author }}</h6>
+                    <p class="card-text">Price: {{ object.price }}</p>
+                    <p class="card-text">{{ object.description|truncatewords:15 }}</p>
+                    <span class="badge bg-secondary">{{ object.category.name }}</span>
+                </div>
+            </div>
+        </div>
+    {% empty %}
+        <p>No books yet.</p>
+    {% endfor %}
+</div>
+{% endblock %}

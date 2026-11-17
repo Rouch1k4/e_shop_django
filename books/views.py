@@ -2,9 +2,9 @@ from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
 from django.db.models import ProtectedError
 from django.urls import reverse_lazy
-from django.views.generic import (CreateView, DeleteView, ListView, UpdateView,)
+from django.views.generic import (CreateView, DeleteView, DetailView, ListView, UpdateView,)
 from books.forms import CategoryForm
-from books.models import Category
+from books.models import Book, Category
 
 
 class CategoryListView(ListView):
@@ -52,3 +52,14 @@ class CategoryDeleteView(DeleteView):
             self.request, f'Category {name} has been successfully deleted',
         )
         return response
+
+class BookListView(ListView):
+    model = Book
+    template_name = 'books/books.html'
+
+    def get_queryset(self):
+        return super().get_queryset().select_related('category')
+
+class BookDetailView(DetailView):
+    model = Book
+    template_name = 'books/book_detail.html'
