@@ -4,4 +4,5 @@
 {% block content %}
 <h1 class="my-4">Add new category</h1>
 {% include 'books/form.html' with text='Create category' %}
+<a href="{% url 'books:category' %}" class="btn btn-outline-secondary mt-3">Back to list</a>
 {% endblock %}

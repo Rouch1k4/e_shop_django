@@ -6,4 +6,5 @@
 <h4>Are you sure you want to delete ? <strong>{{ object }}</strong>?</h4>
 
 {% include 'books/form.html' with text='confirm the deletion' klass='danger' %}
+<a href="{% url 'books:category' %}" class="btn btn-outline-secondary mt-3">Back to list</a>
 {% endblock %}

@@ -6,6 +6,7 @@
 
 <div class="row">
     <div class="col-md-8 mx-auto my-2">
+        <a href="{% url 'books:category_create' %}" class="btn btn-primary mb-3">Add category</a>
         <table class="table table-striped">
             {% for object in object_list %}
             <tr>
@@ -13,9 +14,10 @@
                     {{ object.name }}
                 </td>
                 <td class="text-end">
-                    <a href="{% url 'books:category_update' pk=object.id %}">
-                        <button type="button" class="btn btn-outline-success btn-sm">Edit</button>
-                    </a>
+                    <a href="{% url 'books:category_update' pk=object.id %}"
+                       class="btn btn-outline-success btn-sm">Edit</a>
+                    <a href="{% url 'books:category_delete' pk=object.id %}"
+                       class="btn btn-outline-danger btn-sm">Delete</a>
                 </td>
             </tr>
             {% endfor %}
