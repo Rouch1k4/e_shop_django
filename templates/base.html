@@ -1,6 +1,7 @@
 {% url 'books:category' as category_home_url %}
 {% url 'books:category_create' as category_create_url %}
 {% url 'books:book' as book_home_url %}
+{% url 'books:book_create' as book_create_url %}
 <!doctype html>
 <html lang="en">
   <head>
@@ -28,12 +29,13 @@
                         href="{{ book_home_url }}">Books</a>
                 </li>
                 <li class="nav-item dropdown">
-                  <a class="nav-link dropdown-toggle {% if request.path == category_create_url %}active{% endif %}"
-                     href="#" role="button" data-bs-toggle="dropdown">
-                    Create
-                  </a>
+                <a class="nav-link dropdown-toggle {% if request.path == category_create_url or request.path == book_create_url %}active{% endif %}"
+                   href="#" role="button" data-bs-toggle="dropdown">
+                   Create
+                </a>
                   <ul class="dropdown-menu">
                     <li><a class="dropdown-item" href="{{ category_create_url }}">Category</a></li>
+                      <li><a class="dropdown-item" href="{{ book_create_url }}">Book</a></li>
                   </ul>
                 </li>
               </ul>

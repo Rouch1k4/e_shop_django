@@ -1,0 +1,6 @@
+{% extends 'base.html' %}
+{% block title %}Create Book{% endblock %}
+{% block content %}
+<h1 class="my-4">Add new book</h1>
+{% include 'books/form.html' with text='Create book' %}
+{% endblock %}
