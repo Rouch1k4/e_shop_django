@@ -19,7 +19,15 @@
     </div>
 </div>
 
+
 <a href="{% url 'books:book' %}" class="btn btn-outline-secondary mt-3">Back to list</a>
+
+{% if perms.books.change_book %}
 <a href="{% url 'books:book_update' pk=object.pk %}" class="btn btn-outline-primary mt-3">Edit</a>
+{% endif %}
+
+{%if perms.books.delete_book %}
 <a href="{% url 'books:book_delete' pk=object.pk %}" class="btn btn-outline-danger mt-3">Delete</a>
+{% endif %}
+
 {% endblock %}
