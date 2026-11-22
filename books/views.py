@@ -7,6 +7,9 @@ from books.forms import CategoryForm, BookForm
 from books.models import Book, Category
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 
+import logging
+logger = logging.getLogger(__name__)
+
 
 class CategoryListView(ListView):
     model = Category
@@ -23,6 +26,11 @@ class CategoryCreateView(LoginRequiredMixin,PermissionRequiredMixin,SuccessMessa
     def get_success_message(self, cleaned_data):
         return 'Category {name} has been successfully created'.format(**cleaned_data)
 
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        logger.info('Category created: "%s" by %s', self.object.name, self.request.user)
+        return response
+
 
 class CategoryUpdateView(LoginRequiredMixin,PermissionRequiredMixin,SuccessMessageMixin, UpdateView):
     permission_required = 'books.change_category'
@@ -34,8 +42,13 @@ class CategoryUpdateView(LoginRequiredMixin,PermissionRequiredMixin,SuccessMessa
     def get_success_message(self, cleaned_data):
         return 'Category {name} has been successfully updated'.format(**cleaned_data)
 
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        logger.info('Category updated: "%s" by %s', self.object.name, self.request.user)
+        return response
 
-class CategoryDeleteView(LoginRequiredMixin,PermissionRequiredMixin,DeleteView):
+
+class CategoryDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
     permission_required = 'books.delete_category'
     model = Category
     template_name = 'books/category_delete.html'
@@ -46,16 +59,22 @@ class CategoryDeleteView(LoginRequiredMixin,PermissionRequiredMixin,DeleteView):
         try:
             response = super().form_valid(form)
         except ProtectedError:
+            logger.warning(
+                'Category "%s" not deleted: it still has books (user %s)',
+                name, self.request.user,
+            )
             messages.error(
                 self.request,
                 f'Category {name} cannot be deleted: it still has books',
             )
             return super().form_invalid(form)
 
+        logger.info('Category deleted: "%s" by %s', name, self.request.user)
         messages.success(
             self.request, f'Category {name} has been successfully deleted',
         )
         return response
+
 
 class BookListView(ListView):
     model = Book
@@ -98,6 +117,11 @@ class BookCreateView(LoginRequiredMixin,PermissionRequiredMixin,SuccessMessageMi
     def get_success_message(self, cleaned_data):
         return 'Book {title} has been successfully created'.format(**cleaned_data)
 
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        logger.info('Book created: "%s" by %s', self.object.title, self.request.user)
+        return response
+
 class BookUpdateView(LoginRequiredMixin,PermissionRequiredMixin,SuccessMessageMixin, UpdateView):
     permission_required = 'books.change_book'
     model = Book
@@ -108,7 +132,13 @@ class BookUpdateView(LoginRequiredMixin,PermissionRequiredMixin,SuccessMessageMi
     def get_success_message(self, cleaned_data):
         return 'Book {title} has been successfully updated'.format(**cleaned_data)
 
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        logger.info('Book updated: "%s" by %s', self.object.title, self.request.user)
+        return response
+
 class BookDeleteView(LoginRequiredMixin,PermissionRequiredMixin,DeleteView):
+    permission_required = 'books.delete_book'
     model = Book
     template_name = 'books/book_delete.html'
     success_url = reverse_lazy('books:book')
@@ -116,6 +146,7 @@ class BookDeleteView(LoginRequiredMixin,PermissionRequiredMixin,DeleteView):
     def form_valid(self, form):
         title = self.object.title
         response = super().form_valid(form)
+        logger.info('Book deleted: "%s" by %s', title, self.request.user)
         messages.success(
             self.request, f'Book {title} has been successfully deleted',
         )
